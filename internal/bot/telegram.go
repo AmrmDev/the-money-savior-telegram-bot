@@ -21,30 +21,33 @@ func Start(token string) error {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-	log.Printf("update received: %+v\n", update)
+		log.Printf("update received: %+v\n", update)
 
-	msg := update.Message
-	if msg == nil {
-		msg = update.EditedMessage
-	}
-
-	if msg == nil {
-		log.Println("update without message, skipping")
-		continue
-	}
-
-	log.Printf("message received: %s", msg.Text)
-
-	if msg.IsCommand() {
-		log.Printf("command received: %s", msg.Command())
-
-		switch msg.Command() {
-		case "start":
-			log.Println("handling /start command")
-			handlers.HandleStart(bot, msg)
-			}
+		msg := update.Message
+		if msg == nil {
+			msg = update.EditedMessage
 		}
 
+		if msg == nil {
+			log.Println("update without message, skipping")
+			continue
+		}
+
+		log.Printf("message received: %s", msg.Text)
+
+		if msg.IsCommand() {
+			log.Printf("command received: %s", msg.Command())
+
+			switch msg.Command() {
+			case "start":
+				log.Println("handling /start command")
+				handlers.HandleStart(bot, msg)
+
+			case "gastei":
+				log.Println("handling /gastei command")
+				handlers.HandleExpense(bot, msg)
+			}
+		}
 	}
 
 	return nil
