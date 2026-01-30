@@ -1,10 +1,12 @@
 package bot
 
 import (
+	"fmt"
 	"log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"money-telegram-bot/internal/handlers"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func Start(token string) error {
@@ -13,6 +15,7 @@ func Start(token string) error {
 		return err
 	}
 
+	fmt.Println("")
 	log.Printf("authorized bot as @%s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
@@ -21,6 +24,7 @@ func Start(token string) error {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
+		fmt.Println("")
 		log.Printf("update received: %+v\n", update)
 
 		msg := update.Message
@@ -33,17 +37,20 @@ func Start(token string) error {
 			continue
 		}
 
-		log.Printf("message received: %s", msg.Text)
+		log.Printf("message received: %s |", msg.Text)
 
 		if msg.IsCommand() {
-			log.Printf("command received: %s", msg.Command())
+			fmt.Println("")
+			log.Printf("command received: %s |", msg.Command())
 
 			switch msg.Command() {
 			case "start":
+				fmt.Println("")
 				log.Println("handling /start command")
 				handlers.HandleStart(bot, msg)
 
 			case "gastei":
+				fmt.Println("")
 				log.Println("handling /gastei command")
 				handlers.HandleExpense(bot, msg)
 			}
