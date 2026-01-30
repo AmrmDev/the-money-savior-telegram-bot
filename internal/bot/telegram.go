@@ -1,10 +1,12 @@
 package bot
 
 import (
+	"fmt"
 	"log"
 
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"money-telegram-bot/internal/handlers"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func Start(token string) error {
@@ -13,7 +15,8 @@ func Start(token string) error {
 		return err
 	}
 
-	log.Printf("authorized bot as @%s", bot.Self.UserName)
+	log.Printf("authorized bot as @%s | ready for use.", bot.Self.UserName)
+	fmt.Println("")
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -21,7 +24,7 @@ func Start(token string) error {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		log.Printf("update received: %+v\n", update)
+		logSection("NEW UPDATE")
 
 		msg := update.Message
 		if msg == nil {
@@ -29,34 +32,50 @@ func Start(token string) error {
 		}
 
 		if msg == nil {
-			log.Println("update without message, skipping")
+			log.Println("no message found | skipping update")
+			logSeparator()
 			continue
 		}
 
-		log.Printf("message received: %s", msg.Text)
+		log.Printf("message received: %q", msg.Text)
 
 		if msg.IsCommand() {
-			log.Printf("command received: %s", msg.Command())
+			command := msg.Command()
+			log.Printf("command received: %s", command)
 
-			switch msg.Command() {
+			switch command {
 			case "start":
-				log.Println("handling /start command")
+				log.Println("routing to handler: start")
+				fmt.Println("")
 				handlers.HandleStart(bot, msg)
-
+				
 			case "help":
-				log.Println("handling /help command")
+				log.Println("routing to handler: help")
+				fmt.Println("")
 				handlers.HandleHelp(bot, msg)
-
+				
 			case "gastei":
-				log.Println("handling /gastei command")
+				log.Println("routing to handler: gastei")
+				fmt.Println("")
 				handlers.HandleExpense(bot, msg)
-
+				
 			default:
-				log.Printf("unknown command received: %s", msg.Command())
+				log.Printf("unknown command: %s | routing to invalid command handler", command)
 				handlers.HandleInvalidCommand(bot, msg)
 			}
+		} else {
+			log.Println("message is not a command | ignoring")
 		}
 	}
 
 	return nil
+}
+
+func logSeparator() {
+	log.Println("────────────────────────────────────\n")
+}
+
+func logSection(title string) {
+	log.Println("")
+	log.Println("========== " + title + " ==========")
 }

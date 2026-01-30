@@ -8,15 +8,24 @@ import (
 )
 
 func HandleInvalidCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	errorText := fmt.Sprintf(`✖︎ Comando não reconhecido: %s
+	log.Println("────────── [HANDLER] invalid command ──────────")
+
+	errorText := fmt.Sprintf(
+		`✖︎ Comando não reconhecido: %s
 
 O comando "%s" não existe no Money Savior.
 
-Digite /help para ver todos os comandos disponíveis!`, message.Command(), message.Command())
+Digite /help para ver todos os comandos disponíveis!`,
+		message.Command(),
+		message.Command(),
+	)
+
+	log.Printf("[HANDLER] invalid command received: %s", message.Command())
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, errorText)
 
-	log.Printf("bot sending invalid command message to chat ID %d | command: %s", message.Chat.ID, message.Command())
+	log.Printf("[BOT] sending invalid command message | chatID=%d", message.Chat.ID)
 	bot.Send(msg)
-	log.Printf("invalid command message sent", message.Chat.ID)
+
+	log.Println("────────── [END] invalid command ──────────\n")
 }

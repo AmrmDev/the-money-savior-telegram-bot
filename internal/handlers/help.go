@@ -7,6 +7,8 @@ import (
 )
 
 func HandleHelp(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	log.Println("────────── [HANDLER] /help ──────────")
+
 	helpText := `**Ajuda - Comandos Disponíveis**
 
 **/start**
@@ -33,7 +35,9 @@ Se tiver dúvidas, digite /start para voltar ao menu inicial.`
 	msg := tgbotapi.NewMessage(message.Chat.ID, helpText)
 	msg.ParseMode = "Markdown"
 
-	log.Printf("bot sending help message to chat ID %d", message.Chat.ID)
+	log.Printf("[BOT] sending help message | chatID=%d", message.Chat.ID)
 	bot.Send(msg)
-	log.Printf("help message sent to chat ID %d", message.Chat.ID)
+
+	log.Println("────────── [END] /help ──────────\n")
 }
+
