@@ -43,9 +43,17 @@ func Start(token string) error {
 				log.Println("handling /start command")
 				handlers.HandleStart(bot, msg)
 
+			case "help":
+				log.Println("handling /help command")
+				handlers.HandleHelp(bot, msg)
+
 			case "gastei":
 				log.Println("handling /gastei command")
 				handlers.HandleExpense(bot, msg)
+
+			default:
+				log.Printf("unknown command received: %s", msg.Command())
+				handlers.HandleInvalidCommand(bot, msg)
 			}
 		}
 	}
