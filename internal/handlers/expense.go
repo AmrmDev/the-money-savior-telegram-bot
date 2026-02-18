@@ -12,6 +12,7 @@ import (
 func HandleExpense(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	log.Println("────────── [HANDLER] /gastei ──────────")
 	log.Printf("[HANDLER] raw message: %q", message.Text)
+	
 
 	parts := strings.Fields(message.Text)
 

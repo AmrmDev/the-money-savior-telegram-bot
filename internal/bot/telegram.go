@@ -14,6 +14,7 @@ func Start(token string) error {
 	if err != nil {
 		return err
 	}
+	
 
 	log.Printf("authorized bot as @%s | ready for use.", bot.Self.UserName)
 	fmt.Println("")

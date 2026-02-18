@@ -12,6 +12,7 @@ func HandleInvalidCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	errorText := fmt.Sprintf(
 		`✖︎ Comando não reconhecido: %s
+		
 
 O comando "%s" não existe no Money Savior.
 

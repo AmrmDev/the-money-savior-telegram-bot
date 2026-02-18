@@ -12,6 +12,7 @@ func HandleStart(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 Seu assistente pessoal para rastreamento de despesas.
 
+
 Comandos Disponíveis:
 
 /gastei - Registre suas despesas

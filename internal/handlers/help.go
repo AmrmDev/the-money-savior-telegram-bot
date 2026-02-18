@@ -32,6 +32,7 @@ Registra uma nova despesa em seu histórico.
 
 Se tiver dúvidas, digite /start para voltar ao menu inicial.`
 
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, helpText)
 	msg.ParseMode = "Markdown"
 
