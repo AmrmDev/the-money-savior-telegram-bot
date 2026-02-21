@@ -1,4 +1,4 @@
-# 💰 Money Savior - Telegram Bot
+# Money Savior - Telegram Bot
 
 <div align="center">
 
@@ -10,25 +10,25 @@
 
 Um **assistente pessoal de controle de gastos** integrado ao Telegram com suporte a IDs sequenciais, navegação inteligente e gerenciamento completo de despesas.
 
-[🔗 Repositório](#) • [📖 Documentação](#documentação) • [🚀 Quick Start](#-quick-start) • [📋 Comandos](#-comandos-disponíveis)
+[Repositório](#) • [Documentação](#documentação) • [Quick Start](#-quick-start) • [Comandos](#-comandos-disponíveis)
 
 </div>
 
 ---
 
-## ✨ Features
+## Features
 
-✅ **Registro de Gastos** - Registre despesas com valor, categoria e método de pagamento  
-✅ **IDs Sequenciais** - Gastos salvos automaticamente com IDs em ordem (1, 2, 3...)  
-✅ **Consulta Inteligente** - Liste todos os gastos ou veja um específico com navegação  
-✅ **Navegação** - Botões ⬅️ e ➡️ para mover entre registros  
-✅ **Delete com Confirmação** - Apague um gasto específico ou todos com confirmação inline  
-✅ **Banco de Dados Cloud** - DynamoDB da AWS para armazenamento seguro  
-✅ **Serverless** - Execução via AWS Lambda para escalabilidade  
+[+] **Registro de Gastos** - Registre despesas com valor, categoria e método de pagamento  
+[+] **IDs Sequenciais** - Gastos salvos automaticamente com IDs em ordem (1, 2, 3...)  
+[+] **Consulta Inteligente** - Liste todos os gastos ou veja um específico com navegação  
+[+] **Navegação** - Botões para mover entre registros  
+[+] **Delete com Confirmação** - Apague um gasto específico ou todos com confirmação inline  
+[+] **Banco de Dados Cloud** - DynamoDB da AWS para armazenamento seguro  
+[+] **Serverless** - Execução via AWS Lambda para escalabilidade  
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -57,7 +57,7 @@ Um **assistente pessoal de controle de gastos** integrado ao Telegram com suport
 
 ---
 
-## 📋 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 the-money-savior-telegram-bot/
@@ -88,7 +88,7 @@ the-money-savior-telegram-bot/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Pré-requisitos
 
@@ -125,28 +125,28 @@ cd cmd/lambda
 
 ---
 
-## 📋 Comandos Disponíveis
+## Comandos Disponíveis
 
-### 💸 Registrar Gasto
+### Registrar Gasto
 ```
 /gastei <valor> <categoria> [método]
 ```
 **Exemplo:** `/gastei 45.50 supermercado débito`
 
-### 📊 Consultar Gastos
+### Consultar Gastos
 ```
 /consulta                  # Lista todos os gastos
 /consulta <ID>             # Vê detalhes de um gasto específico
 ```
-**Recurso:** Navegação com ⬅️ e ➡️, visualize gastos sequencialmente
+**Recurso:** Navegação entre registros, visualize gastos sequencialmente
 
-### 🗑️ Deletar Gasto
+### Deletar Gasto
 ```
 /deletar <ID>              # Deleta um gasto específico (com confirmação)
 /deletartudo               # Deleta todos os registros (com confirmação)
 ```
 
-### 🆘 Ajuda
+### Ajuda
 ```
 /help                      # Exibe todos os comandos
 /start                     # Mensagem de boas-vindas
@@ -154,17 +154,17 @@ cd cmd/lambda
 
 ---
 
-## 🔑 Variáveis de Ambiente
+## Variáveis de Ambiente
 
 | Variável | Descrição | Obrigatória |
 |----------|-----------|------------|
-| `TELEGRAM_BOT_TOKEN` | Token do bot Telegram | ✅ Sim |
-| `TABLE_NAME` | Nome da tabela DynamoDB | ✅ Sim |
-| `AWS_REGION` | Região AWS (padrão: us-east-1) | ❌ Não |
+| `TELEGRAM_BOT_TOKEN` | Token do bot Telegram | Sim |
+| `TABLE_NAME` | Nome da tabela DynamoDB | Sim |
+| `AWS_REGION` | Região AWS (padrão: us-east-1) | Não |
 
 ---
 
-## 📊 Modelo de Dados
+## Modelo de Dados
 
 ### Expense
 ```go
@@ -200,50 +200,50 @@ Attributes:
 
 ---
 
-## 🔄 Fluxo de Operações
+## Fluxo de Operações
 
 ### Registrar Gasto
 ```
 1. Usuário: /gastei 50.00 uber pix
-   ↓
+   |
 2. Bot: Valida formato e valor
-   ↓
+   |
 3. Bot: Busca próximo SeqID disponível
-   ↓
+   |
 4. Bot: Salva no DynamoDB
-   ↓
-5. Bot: Confirma com emoji ✅
+   |
+5. Bot: Confirma a operação
 ```
 
 ### Consultar com Navegação
 ```
 1. Usuário: /consulta 3
-   ↓
+   |
 2. Bot: Busca gasto com SeqID=3
-   ↓
+   |
 3. Bot: Exibe card com detalhes
-   ↓
-4. Usuário: Clica em ⬅️ Anterior ou Próximo ➡️
-   ↓
+   |
+4. Usuário: Clica em Anterior ou Próximo
+   |
 5. Bot: Atualiza card inline (sem nova mensagem)
 ```
 
 ### Deletar com Confirmação
 ```
 1. Usuário: /deletar 3
-   ↓
-2. Bot: Exibe detalhes + botões [✅ Sim] [❌ Cancelar]
-   ↓
+   |
+2. Bot: Exibe detalhes + botões [Confirmar] [Cancelar]
+   |
 3. Usuário: Clica confirmar
-   ↓
+   |
 4. Bot: Deleta do DynamoDB
-   ↓
+   |
 5. Bot: Confirma e atualiza IDs (resequencialização automática na próxima consulta)
 ```
 
 ---
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 - **Linguagem:** Go 1.23.0
 - **API Telegram:** [go-telegram-bot-api v5](https://github.com/go-telegram-bot-api/telegram-bot-api)
@@ -253,7 +253,7 @@ Attributes:
 
 ---
 
-## 📦 Dependências
+## Dependências
 
 ```go
 require (
@@ -268,17 +268,17 @@ require (
 
 ---
 
-## 🔐 Segurança
+## Segurança
 
-- ✅ **Validação de entrada** em todos os comandos
-- ✅ **Proteção por ID de usuário** (cada usuário vê apenas seus gastos)
-- ✅ **Confirmação obrigatória** para delete
-- ✅ **Credenciais AWS** via ambiente (nunca hardcoded)
-- ✅ **DynamoDB** com controle de acesso IAM
+- [x] **Validação de entrada** em todos os comandos
+- [x] **Proteção por ID de usuário** (cada usuário vê apenas seus gastos)
+- [x] **Confirmação obrigatória** para delete
+- [x] **Credenciais AWS** via ambiente (nunca hardcoded)
+- [x] **DynamoDB** com controle de acesso IAM
 
 ---
 
-## 🚧 Roadmap Futuro
+## Roadmap Futuro
 
 - [ ] Resumo mensal de gastos
 - [ ] Gráficos de categoria
@@ -290,7 +290,7 @@ require (
 
 ---
 
-## 📝 Logs
+## Logs
 
 O bot mantém logs detalhados em stdout com prefixos:
 - `[INFO]` - Informações gerais
@@ -300,7 +300,7 @@ O bot mantém logs detalhados em stdout com prefixos:
 
 ---
 
-## 🤝 Contribuições
+## Contribuições
 
 Contribuições são bem-vindas! Por favor:
 
@@ -312,18 +312,20 @@ Contribuições são bem-vindas! Por favor:
 
 ---
 
-## 📄 Licença
+## Licença
 
 Distribuído sob a licença MIT. Veja `LICENSE` para mais detalhes.
 
 ---
 
-## 👨‍💻 Autor
+## Autores
 
 **Thyago Toledo**
-
 - Email: thyago10a2007@gmail.com
 - GitHub: [@ThyagoToledo](https://github.com/ThyagoToledo)
+
+**Armando dos Santos**
+- GitHub: [@AmrmDev](https://github.com/AmrmDev)
 
 ---
 
@@ -331,6 +333,6 @@ Distribuído sob a licença MIT. Veja `LICENSE` para mais detalhes.
 
 **[⬆ Voltar ao topo](#-money-savior---telegram-bot)**
 
-Made with ❤️ using Go + AWS
+Made with effort using Go + AWS
 
 </div>
