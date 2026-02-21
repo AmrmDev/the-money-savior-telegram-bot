@@ -2,7 +2,6 @@ package bot
 
 import (
 	"log"
-	"strings"
 
 	"money-telegram-bot/internal/handlers"
 
@@ -10,24 +9,6 @@ import (
 )
 
 func RouteUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
-	// Handle inline keyboard callbacks
-	if update.CallbackQuery != nil {
-		cb := update.CallbackQuery
-		data := cb.Data
-		log.Printf("[INFO] Callback received: %q | userID=%d", data, cb.From.ID)
-
-		switch {
-		case data == "confirm_delete_all" || data == "cancel_delete_all":
-			handlers.HandleDeleteAllCallback(bot, cb)
-		case data == "confirm_delete" || data == "cancel_delete" || strings.HasPrefix(data, "confirm_delete:"):
-			handlers.HandleConfirmDeleteCallback(bot, cb)
-		default:
-			// navigation callbacks (qnav:...) and list
-			handlers.HandleQueryCallback(bot, cb)
-		}
-		return
-	}
-
 	msg := update.Message
 	if msg == nil {
 		msg = update.EditedMessage

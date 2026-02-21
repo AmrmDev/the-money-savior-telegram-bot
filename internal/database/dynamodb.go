@@ -180,3 +180,4 @@ func DeleteAllExpenses(ctx context.Context, userID int64) error {
 	log.Printf("[INFO] All expenses deleted | userID=%d | count=%d", userID, len(expenses))
 	return nil
 }
+
