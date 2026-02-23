@@ -324,7 +324,7 @@ Distribuído sob a licença MIT. Veja `LICENSE` para mais detalhes.
 - Email: thyago10a2007@gmail.com
 - GitHub: [@ThyagoToledo](https://github.com/ThyagoToledo)
 
-**Armando dos Santos**
+**Amorim**
 - GitHub: [@AmrmDev](https://github.com/AmrmDev)
 
 ---
