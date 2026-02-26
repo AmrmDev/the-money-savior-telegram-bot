@@ -6,7 +6,8 @@ import (
 	"log"
 	"money-telegram-bot/internal/models"
 	"os"
-
+	"time"
+	
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -48,17 +49,10 @@ func SaveExpense(ctx context.Context, expense *models.Expense) error {
 		return fmt.Errorf("DynamoDB client is not initialized")
 	}
 
-	nextSeq, err := getNextSeqID(ctx, expense.UserID)
-	if err != nil {
-		log.Printf("[ERROR] Failed to get next seq_id: %v", err)
-		return err
-	}
-	expense.SeqID = nextSeq
-	expense.ExpenseID = fmt.Sprintf("%d#%s", expense.UserID, expense.CreatedAt.Format("2006-01-02T15:04:05Z07:00"))
+	expense.ExpenseID = expense.CreatedAt.Format(time.RFC3339Nano)
 
 	av, err := attributevalue.MarshalMap(expense)
 	if err != nil {
-		log.Printf("[ERROR] Failed to marshal expense: %v", err)
 		return err
 	}
 
@@ -67,20 +61,7 @@ func SaveExpense(ctx context.Context, expense *models.Expense) error {
 		Item:      av,
 	})
 
-	if err != nil {
-		log.Printf("[ERROR] Failed to save expense to DynamoDB: %v", err)
-		return err
-	}
-
-	log.Printf(
-		"[INFO] Expense saved successfully | userID=%d | seqID=%d | amount=R$%.2f | category=%s",
-		expense.UserID,
-		expense.SeqID,
-		expense.Amount,
-		expense.Category,
-	)
-
-	return nil
+	return err
 }
 
 func GetUserExpenses(ctx context.Context, userID int64) ([]models.Expense, error) {
