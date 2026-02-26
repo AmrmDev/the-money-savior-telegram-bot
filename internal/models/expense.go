@@ -11,5 +11,5 @@ type Expense struct {
 	Method    string    `dynamodbav:"method"`
 	CreatedAt time.Time `dynamodbav:"created_at"`
 	ExpenseID string    `dynamodbav:"expense_id"` // sort key: user_id#timestamp
-	SeqID     int       `dynamodbav:"seq_id"`      // sequential ID: 1, 2, 3...
+	DisplayID string 	`dynamodbav:"display_id"`
 }

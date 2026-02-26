@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"money-telegram-bot/internal/models"
+	"money-telegram-bot/internal/utils"
 	"os"
 	"time"
 	
@@ -30,31 +31,20 @@ func InitDB(ctx context.Context) error {
 	return nil
 }
 
-func getNextSeqID(ctx context.Context, userID int64) (int, error) {
-	expenses, err := GetUserExpenses(ctx, userID)
-	if err != nil {
-		return 0, err
-	}
-	maxID := 0
-	for _, e := range expenses {
-		if e.SeqID > maxID {
-			maxID = e.SeqID
-		}
-	}
-	return maxID + 1, nil
-}
-
 func SaveExpense(ctx context.Context, expense *models.Expense) error {
 	if dynamoClient == nil {
 		return fmt.Errorf("DynamoDB client is not initialized")
 	}
 
 	expense.ExpenseID = expense.CreatedAt.Format(time.RFC3339Nano)
+	expense.DisplayID = utils.GenerateDisplayID()
 
 	av, err := attributevalue.MarshalMap(expense)
 	if err != nil {
 		return err
 	}
+
+	log.Println("Table being used:", tableName)
 
 	_, err = dynamoClient.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(tableName),
@@ -94,50 +84,12 @@ func GetUserExpenses(ctx context.Context, userID int64) ([]models.Expense, error
 	return expenses, nil
 }
 
-func GetExpenseBySeqID(ctx context.Context, userID int64, seqID int) (*models.Expense, error) {
-	expenses, err := GetUserExpenses(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-	for i := range expenses {
-		if expenses[i].SeqID == seqID {
-			return &expenses[i], nil
-		}
-	}
-	return nil, fmt.Errorf("nenhum gasto encontrado com ID %d", seqID)
-}
-
 func GetTotalExpenses(ctx context.Context, userID int64) (int, error) {
 	expenses, err := GetUserExpenses(ctx, userID)
 	if err != nil {
 		return 0, err
 	}
 	return len(expenses), nil
-}
-
-func DeleteExpenseBySeqID(ctx context.Context, userID int64, seqID int) error {
-	expenses, err := GetUserExpenses(ctx, userID)
-	if err != nil {
-		return err
-	}
-	for _, expense := range expenses {
-		if expense.SeqID == seqID {
-			_, err := dynamoClient.DeleteItem(ctx, &dynamodb.DeleteItemInput{
-				TableName: aws.String(tableName),
-				Key: map[string]types.AttributeValue{
-					"user_id":    &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", expense.UserID)},
-					"expense_id": &types.AttributeValueMemberS{Value: expense.ExpenseID},
-				},
-			})
-			if err != nil {
-				log.Printf("[ERROR] Failed to delete expense seqID=%d: %v", seqID, err)
-				return err
-			}
-			log.Printf("[INFO] Expense deleted | userID=%d | seqID=%d", userID, seqID)
-			return nil
-		}
-	}
-	return fmt.Errorf("nenhum gasto encontrado com ID %d", seqID)
 }
 
 func DeleteAllExpenses(ctx context.Context, userID int64) error {
