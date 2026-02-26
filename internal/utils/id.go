@@ -1,12 +1,13 @@
 package utils
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
-	"time"
+	"math/big"
 )
 
-func GenerateDisplayID() string {
-	rand.Seed(time.Now().UnixNano())
-	return fmt.Sprintf("AM%05d", rand.Intn(90000)+10000)
+func GenerateExpenseID() string {
+	max := big.NewInt(999999)
+	n, _ := rand.Int(rand.Reader, max)
+	return fmt.Sprintf("AM%06d", n.Int64())
 }

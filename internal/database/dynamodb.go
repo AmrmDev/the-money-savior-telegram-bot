@@ -7,7 +7,6 @@ import (
 	"money-telegram-bot/internal/models"
 	"money-telegram-bot/internal/utils"
 	"os"
-	"time"
 	
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -36,8 +35,7 @@ func SaveExpense(ctx context.Context, expense *models.Expense) error {
 		return fmt.Errorf("DynamoDB client is not initialized")
 	}
 
-	expense.ExpenseID = expense.CreatedAt.Format(time.RFC3339Nano)
-	expense.DisplayID = utils.GenerateDisplayID()
+	expense.ExpenseID = utils.GenerateExpenseID()
 
 	av, err := attributevalue.MarshalMap(expense)
 	if err != nil {
