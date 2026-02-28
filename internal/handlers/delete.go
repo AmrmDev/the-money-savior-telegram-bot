@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"money-telegram-bot/internal/database"
+	"money-telegram-bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -18,25 +19,25 @@ func HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	err := database.DeleteAllExpenses(context.Background(), userID)
 	if err != nil {
-		reply(bot, message, "❌ Erro ao limpar seus gastos.")
+		utils.Reply(bot, message.Chat.ID, "❌ Erro ao limpar seus gastos.")
 		return
 	}
 
-	reply(bot, message, "🧹 Todos os gastos foram apagados com sucesso.")
+	utils.Reply(bot, message.Chat.ID, "🧹 Todos os gastos foram apagados com sucesso.")
 }
 
 func HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	args := strings.Fields(message.Text)
 
 	if len(args) < 2 {
-		reply(bot, message, "❌ Use: /deletar AM123456")
+		utils.Reply(bot, message.Chat.ID, "❌ Use: /deletar AM123456")
 		return
 	}
 
 	expenseID := strings.ToUpper(args[1])
 
 	if !strings.HasPrefix(expenseID, "AM") {
-		reply(bot, message, "❌ ID inválido. Exemplo válido: AM123456")
+		utils.Reply(bot, message.Chat.ID, "❌ ID inválido. Exemplo válido: AM123456")
 		return
 	}
 
@@ -44,9 +45,9 @@ func HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	err := database.DeleteExpenseByID(context.Background(), userID, expenseID)
 	if err != nil {
-		reply(bot, message, "❌ Erro ao deletar o gasto.")
+		utils.Reply(bot, message.Chat.ID, "❌ Erro ao deletar o gasto.")
 		return
 	}
 
-	reply(bot, message, "✅ Gasto deletado com sucesso.")
+	utils.Reply(bot, message.Chat.ID, "✅ Gasto deletado com sucesso.")
 }

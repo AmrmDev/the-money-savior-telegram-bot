@@ -10,6 +10,7 @@ import (
 
 	"money-telegram-bot/internal/database"
 	"money-telegram-bot/internal/models"
+	"money-telegram-bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -21,30 +22,32 @@ func HandleExpense(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	parts := strings.Fields(message.Text)
 
 	if len(parts) < 3 {
-		log.Println("[ERROR] Invalid command format. Expected: /gastei <amount> <category> [method]")
-		reply(bot, message, "⚠️ Formato incorreto — use: /gastei <valor> <categoria> [método] | Exemplo: /gastei 21.90 uber pix")
+		utils.Reply(bot, message.Chat.ID, "⚠️ Formato incorreto — use:\n/gastei <valor> <categoria> [método]\n\nExemplo:\n/gastei 21.90 uber pix")
 		return
 	}
 
 	amountStr := parts[1]
-	description := parts[2]
+	categoryInput := parts[2]
 
-	method := "desconhecido"
+	methodInput := "desconhecido"
 	if len(parts) >= 4 {
-		method = parts[3]
+		methodInput = parts[3]
 	}
 
 	amount, err := strconv.ParseFloat(amountStr, 64)
 	if err != nil {
-		log.Printf("[ERROR] Failed to parse amount value: %q | error=%v", amountStr, err)
-		reply(bot, message, "Valor inválido, exemplo: /gastei 21.74 uber pix")
+		utils.Reply(bot, message.Chat.ID, "❌ Valor inválido.\nExemplo correto:\n/gastei 21.74 uber pix")
 		return
 	}
 
+	// 🔹 NORMALIZAÇÃO AQUI
+	category := utils.FormatTitle(categoryInput)
+	method := utils.NormalizeMethod(methodInput)
+
 	log.Printf(
-		"[INFO] Expense parsed successfully | amount=R$%.2f | category=%s | method=%s",
+		"[INFO] Expense parsed | amount=R$%.2f | category=%s | method=%s",
 		amount,
-		description,
+		category,
 		method,
 	)
 
@@ -54,7 +57,7 @@ func HandleExpense(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		ChatID:    message.Chat.ID,
 		Username:  user.UserName,
 		Amount:    amount,
-		Category:  description,
+		Category:  category,
 		Method:    method,
 		CreatedAt: time.Now().UTC(),
 	}
@@ -64,44 +67,26 @@ func HandleExpense(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	if err := database.SaveExpense(ctx, expense); err != nil {
 		log.Printf("[ERROR] Failed to save expense: %v", err)
-		reply(bot, message, "❌ Erro ao salvar gasto. Tente novamente.")
+		utils.Reply(bot, message.Chat.ID, "❌ Erro ao salvar gasto. Tente novamente.")
 		return
 	}
 
-	awaitingServerResponse := "⏳ Registrando seu gasto..."
 	response := fmt.Sprintf(
-		"✅ Gasto registrado com sucesso!\n\n"+
-			"💰 Valor: R$%.2f\n"+
-			"📝 Descrição: %s\n"+
-			"💳 Método: %s",
+		"✅ *Gasto registrado com sucesso!*\n\n"+
+			"🆔 %s\n"+
+			"💰 R$%.2f\n"+
+			"📝 %s\n"+
+			"💳 %s",
+		expense.ExpenseID,
 		amount,
-		description,
+		category,
 		method,
 	)
 
-	reply(bot, message, awaitingServerResponse)
-	time.Sleep(1 * time.Second)
-	reply(bot, message, response)
-}
+	msg := tgbotapi.NewMessage(message.Chat.ID, response)
+	msg.ParseMode = "Markdown"
 
-func reply(bot *tgbotapi.BotAPI, message *tgbotapi.Message, text string) {
-	user := message.From
-
-	username := user.UserName
-	if username == "" {
-		username = "sem_username"
-	}
-
-	msg := tgbotapi.NewMessage(message.Chat.ID, text)
 	if _, err := bot.Send(msg); err != nil {
-		log.Printf("[ERROR] Failed to send message | chatID=%d | userID=%d | error=%v", message.Chat.ID, user.ID, err)
-		return
+		log.Printf("[ERROR] Failed to send confirmation message: %v", err)
 	}
-
-	log.Printf(
-		"[INFO] Response sent | chatID=%d | userID=%d | userName=%s | status=success",
-		message.Chat.ID,
-		user.ID,
-		username,
-	)
 }
