@@ -47,7 +47,7 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) error {
 		return err
 	}
 
-	bot.RouteUpdate(telegramBot, update)
+	bot.RouteUpdate(telegramBot, update, &bot.BotHandlers)
 	return nil
 }
 

@@ -5,32 +5,36 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
-	"money-telegram-bot/internal/database"
+	"money-telegram-bot/internal/service"
 	"money-telegram-bot/internal/utils"
-
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleQuery(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+type QueryHandler struct {
+	expenseService *services.ExpenseService
+}
+
+func NewQueryHandler(expenseService *services.ExpenseService) *QueryHandler {
+	return &QueryHandler{expenseService: expenseService}
+}
+
+func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	log.Printf("[INFO] Processing /consulta | userID=%d", message.From.ID)
 
-	args := strings.Fields(message.CommandArguments())
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
+	args := strings.Fields(message.CommandArguments())
+	userID := fmt.Sprint(message.From.ID)
+
+	// 🔹 Consulta por ID
 	if len(args) == 1 {
 		expenseID := strings.ToUpper(args[0])
 
-		if !strings.HasPrefix(expenseID, "AM") {
-			utils.Reply(bot, message.Chat.ID, "❌ ID inválido. Exemplo: /consulta AM123456")
-			return
-		}
-
-		expense, err := database.GetExpenseByID(
-			context.Background(),
-			fmt.Sprint(message.From.ID),
-			expenseID,
-		)
+		expense, err := h.expenseService.GetByID(ctx, userID, expenseID)
 		if err != nil {
 			utils.Reply(bot, message.Chat.ID, "❌ Nenhum gasto encontrado com esse ID.")
 			return
@@ -56,10 +60,7 @@ func HandleQuery(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		return
 	}
 
-	expenses, err := database.GetUserExpenses(
-		context.Background(),
-		fmt.Sprint(message.From.ID),
-	)
+	expenses, err := h.expenseService.ListByUser(ctx, userID)
 	if err != nil {
 		utils.Reply(bot, message.Chat.ID, "❌ Erro ao consultar gastos.")
 		return

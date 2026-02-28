@@ -1,14 +1,27 @@
 package bot
 
 import (
+	"context"
 	"log"
 
 	"money-telegram-bot/internal/handlers"
+	"money-telegram-bot/internal/repository"
+	"money-telegram-bot/internal/service"
 
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+type BotHandlers struct {
+	Expense *handlers.ExpenseHandler
+	Query *handlers.QueryHandler
+}
 
-func RouteUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func RouteUpdate(
+	bot *tgbotapi.BotAPI,
+	update tgbotapi.Update,
+	h *BotHandlers,
+) {
 	msg := update.Message
 	if msg == nil {
 		msg = update.EditedMessage
@@ -26,22 +39,22 @@ func RouteUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		log.Printf("[INFO] Command received: /%s", command)
 
 		switch command {
-		case "start":
-			handlers.HandleStart(bot, msg)
-		case "help":
-			handlers.HandleHelp(bot, msg)
-		case "gastei":
-			handlers.HandleExpense(bot, msg)
-		case "consulta":
-			handlers.HandleQuery(bot, msg)
-		case "deletar":
-			handlers.HandleDelete(bot, msg)
-		case "deletartudo":
-			handlers.HandleDeleteAll(bot, msg)
-		default:
-			log.Printf("[WARN] Unknown command received: /%s", command)
-			handlers.HandleInvalidCommand(bot, msg)
-		}
+	case "start":
+		handlers.HandleStart(bot, msg)
+
+	case "help":
+		handlers.HandleHelp(bot, msg)
+
+	case "gastei":
+		h.Expense.Handle(bot, msg)
+
+	case "consulta":
+		h.Query.Handle(bot, msg)
+
+	default:
+		log.Printf("[WARN] Unknown command received: /%s", command)
+		handlers.HandleInvalidCommand(bot, msg)
+	}
 	}
 }
 
@@ -52,7 +65,23 @@ func Start(token string) error {
 		return err
 	}
 
-	log.Printf("[INFO] Bot authenticated successfully as @%s", bot.Self.UserName)
+	log.Printf("[INFO] Bot authenticated as @%s", bot.Self.UserName)
+
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return err
+	}
+
+	dynamoClient := dynamodb.NewFromConfig(cfg)
+
+	expenseRepo := repository.NewDynamoExpenseRepository(dynamoClient)
+
+	expenseService := services.NewExpenseService(expenseRepo)
+
+	botHandlers := &BotHandlers{
+		Expense: handlers.NewExpenseHandler(expenseService),
+		Query:   handlers.NewQueryHandler(expenseService),
+	}
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
@@ -60,8 +89,8 @@ func Start(token string) error {
 	updates := bot.GetUpdatesChan(u)
 
 	for update := range updates {
-		RouteUpdate(bot, update)
-		}
+		RouteUpdate(bot, update, botHandlers)
+	}
+
 	return nil
 }
-
