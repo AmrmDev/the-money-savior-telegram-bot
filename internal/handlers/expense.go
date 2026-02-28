@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -26,14 +25,14 @@ func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message)
 
 	if len(parts) < 3 {
 		utils.Reply(bot, message.Chat.ID,
-			"⚠️ Formato incorreto — use:\n/gastei <valor> <categoria> [método]\n\nExemplo:\n/gastei 21.90 uber pix",
+			utils.ErrInvalidFormat,
 		)
 		return
 	}
 
 	amount, err := strconv.ParseFloat(parts[1], 64)
 	if err != nil {
-		utils.Reply(bot, message.Chat.ID, "❌ Valor inválido.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrInvalidAmount)
 		return
 	}
 
@@ -57,19 +56,18 @@ func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message)
 	)
 
 	if err != nil {
-		utils.Reply(bot, message.Chat.ID, "❌ Erro ao salvar gasto.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrSaveExpense)
 		return
 	}
 
-	utils.Reply(bot, message.Chat.ID, fmt.Sprintf(
-		"✅ *Gasto registrado com sucesso!*\n\n"+
-			"🆔 %s\n"+
-			"💰 R$ %.2f\n"+
-			"📝 %s\n"+
-			"💳 %s",
-		expense.ExpenseID,
-		expense.Amount,
-		expense.Category,
-		expense.Method,
-	))
+	utils.Reply(
+		bot,
+		message.Chat.ID,
+		utils.SuccessExpenseMessage(
+			expense.ExpenseID,
+			expense.Amount,
+			expense.Category,
+			expense.Method,
+		),
+	)
 }

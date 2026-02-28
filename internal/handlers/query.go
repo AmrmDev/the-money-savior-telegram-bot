@@ -36,7 +36,7 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 		expense, err := h.expenseService.GetByID(ctx, userID, expenseID)
 		if err != nil {
-			utils.Reply(bot, message.Chat.ID, "❌ Nenhum gasto encontrado com esse ID.")
+			utils.Reply(bot, message.Chat.ID, utils.ErrExpenseNotFound)
 			return
 		}
 
@@ -62,12 +62,12 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	expenses, err := h.expenseService.ListByUser(ctx, userID)
 	if err != nil {
-		utils.Reply(bot, message.Chat.ID, "❌ Erro ao consultar gastos.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrQueryExpenses)
 		return
 	}
 
 	if len(expenses) == 0 {
-		utils.Reply(bot, message.Chat.ID, "📝 Você ainda não registrou nenhum gasto.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrNullExpensesReturn)
 		return
 	}
 

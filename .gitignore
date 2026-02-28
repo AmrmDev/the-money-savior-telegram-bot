@@ -1,3 +1,4 @@
 cmd/lambda/*.zip
 cmd/lambda/deploy.sh
 cmd/lambda/bootstrap
+.github/workflows
