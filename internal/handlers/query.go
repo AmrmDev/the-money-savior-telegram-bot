@@ -14,10 +14,10 @@ import (
 )
 
 type QueryHandler struct {
-	expenseService *services.ExpenseService
+	expenseService *service.ExpenseService
 }
 
-func NewQueryHandler(expenseService *services.ExpenseService) *QueryHandler {
+func NewQueryHandler(expenseService *service.ExpenseService) *QueryHandler {
 	return &QueryHandler{expenseService: expenseService}
 }
 
