@@ -24,32 +24,32 @@ func (h *DeleteHandler) HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.
 
 	err := h.service.DeleteAllExpenses(context.Background(), message.From.ID)
 	if err != nil {
-		utils.Reply(bot, message.Chat.ID, "❌ Erro ao limpar seus gastos.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrDeletingExpenses)
 		return
 	}
 
-	utils.Reply(bot, message.Chat.ID, "🧹 Todos os gastos foram apagados com sucesso.")
+	utils.Reply(bot, message.Chat.ID, utils.SuccessDeleteAll)
 }
 
 func (h *DeleteHandler) HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	args := strings.Fields(message.Text)
 
 	if len(args) < 2 {
-		utils.Reply(bot, message.Chat.ID, "❌ Use: /deletar AM123456")
+		utils.Reply(bot, message.Chat.ID, utils.ErrShouldUseFormatToDelete)
 		return
 	}
 
 	expenseID := strings.ToUpper(args[1])
 	if !strings.HasPrefix(expenseID, "AM") {
-		utils.Reply(bot, message.Chat.ID, "❌ ID inválido. Exemplo válido: AM123456")
+		utils.Reply(bot, message.Chat.ID, utils.ErrInvalidDeleteIdFormat)
 		return
 	}
 
 	err := h.service.DeleteExpense(context.Background(), message.From.ID, expenseID)
 	if err != nil {
-		utils.Reply(bot, message.Chat.ID, "❌ Erro ao deletar o gasto.")
+		utils.Reply(bot, message.Chat.ID, utils.ErrDeletingExpense)
 		return
 	}
 
-	utils.Reply(bot, message.Chat.ID, "✅ Gasto deletado com sucesso.")
+	utils.Reply(bot, message.Chat.ID, utils.SuccessDeleteExpense)
 }

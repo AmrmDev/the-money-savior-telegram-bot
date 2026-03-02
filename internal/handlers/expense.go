@@ -13,10 +13,10 @@ import (
 )
 
 type ExpenseHandler struct {
-	expenseService *services.ExpenseService
+	expenseService *service.ExpenseService
 }
 
-func NewExpenseHandler(expenseService *services.ExpenseService) *ExpenseHandler {
+func NewExpenseHandler(expenseService *service.ExpenseService) *ExpenseHandler {
 	return &ExpenseHandler{expenseService: expenseService}
 }
 
