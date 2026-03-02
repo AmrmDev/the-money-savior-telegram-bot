@@ -53,6 +53,30 @@ const (
 		💡 *Dica:* Os IDs são sequenciais (1, 2, 3...). Use /consulta para ver os IDs antes de deletar.
 
 		🔙 Digite */start* para voltar ao menu inicial.`
+
+	MsgStart = `👋 Bem-vindo ao *Money Savior*!
+
+💰 Seu assistente pessoal para controle de gastos e organização financeira.
+
+📌 *Comandos disponíveis:*
+
+➕ /gastei — Registre um novo gasto
+Exemplo: /gastei 21.90 uber pix
+
+📋 /consulta — Veja todos os gastos (IDs em ordem)
+
+🔎 /consulta <ID> — Veja um gasto específico com navegação
+Exemplo: /consulta 3
+
+🗑️ /deletar <ID> — Delete um gasto pelo ID
+
+❌ /deletartudo — Delete todos os gastos
+
+ℹ️ /help — Veja todos os comandos e exemplos
+
+✨ Dica: os IDs são sequenciais (1, 2, 3...), facilitando o gerenciamento!
+
+Digite /help para mais detalhes 🚀`
 )
 
 func SuccessExpenseMessage(
