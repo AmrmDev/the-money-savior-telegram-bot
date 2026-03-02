@@ -2,22 +2,27 @@ package handlers
 
 import (
 	"context"
-	"strconv"
-	"strings"
 	"log"
+	"money-telegram-bot/internal/service"
+	"strings"
 
-	"money-telegram-bot/internal/database"
 	"money-telegram-bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	userID := message.From.ID
+type DeleteHandler struct {
+	service *service.ExpenseService
+}
 
-	log.Printf("[WARN] /deletartudo invoked | userID=%d", userID)
+func NewDeleteHandler(service *service.ExpenseService) *DeleteHandler {
+	return &DeleteHandler{service: service}
+}
 
-	err := database.DeleteAllExpenses(context.Background(), userID)
+func (h *DeleteHandler) HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	log.Printf("[WARN] /deletartudo invoked | userID=%d", message.From.ID)
+
+	err := h.service.DeleteAllExpenses(context.Background(), message.From.ID)
 	if err != nil {
 		utils.Reply(bot, message.Chat.ID, "❌ Erro ao limpar seus gastos.")
 		return
@@ -26,7 +31,7 @@ func HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	utils.Reply(bot, message.Chat.ID, "🧹 Todos os gastos foram apagados com sucesso.")
 }
 
-func HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+func (h *DeleteHandler) HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	args := strings.Fields(message.Text)
 
 	if len(args) < 2 {
@@ -35,15 +40,12 @@ func HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	}
 
 	expenseID := strings.ToUpper(args[1])
-
 	if !strings.HasPrefix(expenseID, "AM") {
 		utils.Reply(bot, message.Chat.ID, "❌ ID inválido. Exemplo válido: AM123456")
 		return
 	}
 
-	userID := strconv.FormatInt(message.From.ID, 10)
-
-	err := database.DeleteExpenseByID(context.Background(), userID, expenseID)
+	err := h.service.DeleteExpense(context.Background(), message.From.ID, expenseID)
 	if err != nil {
 		utils.Reply(bot, message.Chat.ID, "❌ Erro ao deletar o gasto.")
 		return

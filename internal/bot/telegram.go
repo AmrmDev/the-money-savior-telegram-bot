@@ -12,9 +12,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+
 type BotHandlers struct {
 	Expense *handlers.ExpenseHandler
-	Query *handlers.QueryHandler
+	Query   *handlers.QueryHandler
+	Delete  *handlers.DeleteHandler
 }
 
 func RouteUpdate(
@@ -39,25 +41,24 @@ func RouteUpdate(
 		log.Printf("[INFO] Command received: /%s", command)
 
 		switch command {
-	case "start":
-		handlers.HandleStart(bot, msg)
+		case "start":
+			handlers.HandleStart(bot, msg)
 
-	case "help":
-		handlers.HandleHelp(bot, msg)
+		case "help":
+			handlers.HandleHelp(bot, msg)
 
-	case "gastei":
-		h.Expense.Handle(bot, msg)
+		case "gastei":
+			h.Expense.Handle(bot, msg)
 
-	case "consulta":
-		h.Query.Handle(bot, msg)
+		case "consulta":
+			h.Query.Handle(bot, msg)
 
-	default:
-		log.Printf("[WARN] Unknown command received: /%s", command)
-		handlers.HandleInvalidCommand(bot, msg)
-	}
+		default:
+			log.Printf("[WARN] Unknown command received: /%s", command)
+			handlers.HandleInvalidCommand(bot, msg)
+		}
 	}
 }
-
 
 func Start(token string) error {
 	bot, err := tgbotapi.NewBotAPI(token)
@@ -76,7 +77,7 @@ func Start(token string) error {
 
 	expenseRepo := repository.NewDynamoExpenseRepository(dynamoClient)
 
-	expenseService := services.NewExpenseService(expenseRepo)
+	expenseService := service.NewExpenseService(expenseRepo)
 
 	botHandlers := &BotHandlers{
 		Expense: handlers.NewExpenseHandler(expenseService),

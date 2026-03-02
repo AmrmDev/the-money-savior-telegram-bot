@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"money-telegram-bot/internal/models"
@@ -22,6 +23,14 @@ func (s *ExpenseService) GetByID(ctx context.Context, userID, expenseID string) 
 }
 func (s *ExpenseService) ListByUser(ctx context.Context, userID string) ([]models.Expense, error) {
 	return s.repo.FindByUser(ctx, userID)
+}
+
+func (s *ExpenseService) DeleteAllExpenses(ctx context.Context, userID int64) error {
+	return s.repo.DeleteAllExpenses(ctx, userID)
+}
+
+func (s *ExpenseService) DeleteExpense(ctx context.Context, userID int64, expenseID string) error {
+	return s.repo.DeleteByID(ctx, strconv.FormatInt(userID, 10), expenseID)
 }
 
 func (s *ExpenseService) CreateExpense(

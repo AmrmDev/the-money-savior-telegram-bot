@@ -105,4 +105,45 @@ func (r *DynamoExpenseRepository) FindByID(
 	return &expense, nil
 }
 
+func (r *DynamoExpenseRepository) DeleteAllExpenses(ctx context.Context, userID int64) error {
+	userIDStr := fmt.Sprintf("%d", userID)
+
+	expenses, err := r.FindByUser(ctx, userIDStr)
+	if err != nil {
+		return err
+	}
+
+	for _, expense := range expenses {
+		_, err := r.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+			TableName: aws.String(r.tableName),
+			Key: map[string]types.AttributeValue{
+				"user_id":    &types.AttributeValueMemberN{Value: userIDStr},
+				"expense_id": &types.AttributeValueMemberS{Value: expense.ExpenseID},
+			},
+		})
+		if err != nil {
+			log.Printf("[ERROR] Failed to delete expense: %v", err)
+			return err
+		}
+	}
+
+	log.Printf("[INFO] All expenses deleted | userID=%d | count=%d", userID, len(expenses))
+	return nil
+}
+
+func (r *DynamoExpenseRepository) DeleteByID(ctx context.Context, userID, expenseID string) error {
+	_, err := r.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+		TableName: aws.String(r.tableName),
+		Key: map[string]types.AttributeValue{
+			"user_id":    &types.AttributeValueMemberS{Value: userID},
+			"expense_id": &types.AttributeValueMemberS{Value: expenseID},
+		},
+	})
+	if err != nil {
+		log.Printf("[ERROR] Failed to delete expense %s: %v", expenseID, err)
+		return err
+	}
+	return nil
+}
+
 var _ ExpenseRepository = (*DynamoExpenseRepository)(nil)
