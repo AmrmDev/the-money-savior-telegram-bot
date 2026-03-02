@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"money-telegram-bot/internal/repository"
 	"os"
 	"time"
-	
+
 	"money-telegram-bot/internal/bot"
-	"money-telegram-bot/internal/database"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
@@ -34,8 +34,8 @@ func init() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
-	if err := database.InitDB(ctx); err != nil {
+
+	if err := repository.InitDB(ctx); err != nil {
 		log.Fatal("[FATAL] Failed to initialize DynamoDB:", err)
 	}
 }

@@ -30,7 +30,6 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	args := strings.Fields(message.CommandArguments())
 	userID := fmt.Sprint(message.From.ID)
 
-	// 🔹 Consulta por ID
 	if len(args) == 1 {
 		expense, err := h.expenseService.GetByID(ctx, userID, args[0])
 		if err != nil {
