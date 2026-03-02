@@ -23,6 +23,8 @@ const (
 	SuccessDeleteAll     = "🧹 Todos os gastos foram apagados com sucesso."
 	SuccessDeleteExpense = "✅ Gasto deletado com sucesso."
 
+	NoUsernameConst = "noUserName"
+
 	MsgHelp = `🆘 *Ajuda — Comandos Disponíveis*
 
 		🚀 *Comandos principais:*
@@ -114,4 +116,17 @@ func ExpenseListMessage(expenses []models.Expense) string {
 	response.WriteString("\n💡 Use `/consulta AMxxxxxx` para ver detalhes.")
 
 	return response.String()
+}
+
+func MsgInvalidCommand(command string) string {
+	return fmt.Sprintf(
+		`❌ *Comando não reconhecido*
+
+O comando *%s* não existe no *Money Savior* 😕  
+
+📋 Para ver a lista de comandos disponíveis, digite */help*.
+
+💡 Dica: confira se o comando foi digitado corretamente.`,
+		command,
+	)
 }

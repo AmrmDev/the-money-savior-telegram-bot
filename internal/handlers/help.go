@@ -15,7 +15,7 @@ func HandleHelp(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	user := message.From
 	username := user.UserName
 	if username == "" {
-		username = "noUserName"
+		username = utils.NoUsernameConst
 	}
 
 	log.Printf(
