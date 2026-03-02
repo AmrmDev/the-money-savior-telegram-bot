@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -10,12 +10,12 @@ import (
 
 var db *dynamodb.Client
 
-func InitDB(ctx context.Context) *dynamodb.Client {
+func InitDB(ctx context.Context) (*dynamodb.Client, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		log.Fatalf("erro ao carregar config AWS: %v", err)
+		return nil, fmt.Errorf("erro ao carregar config AWS: %w", err)
 	}
 
 	db = dynamodb.NewFromConfig(cfg)
-	return db
+	return db, nil
 }
