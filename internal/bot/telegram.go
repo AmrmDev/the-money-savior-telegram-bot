@@ -53,6 +53,12 @@ func RouteUpdate(
 		case "consulta":
 			h.Query.Handle(bot, msg)
 
+		case "deletar":
+			h.Delete.HandleDelete(bot, msg)
+
+		case "deletartudo":
+			h.Delete.HandleDeleteAll(bot, msg)
+
 		default:
 			log.Printf("[WARN] Unknown command received: /%s", command)
 			handlers.HandleInvalidCommand(bot, msg)
