@@ -56,7 +56,7 @@ func (r *DynamoExpenseRepository) FindByUser(
 		TableName:              aws.String(r.tableName),
 		KeyConditionExpression: aws.String("user_id = :uid"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":uid": &types.AttributeValueMemberS{Value: userID},
+			":uid": &types.AttributeValueMemberN{Value: userID},
 		},
 		ScanIndexForward: aws.Bool(true),
 	}
@@ -84,7 +84,7 @@ func (r *DynamoExpenseRepository) FindByID(
 	out, err := r.client.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
-			"user_id":    &types.AttributeValueMemberS{Value: userID},
+			"user_id":    &types.AttributeValueMemberN{Value: userID},
 			"expense_id": &types.AttributeValueMemberS{Value: expenseID},
 		},
 	})
@@ -135,7 +135,7 @@ func (r *DynamoExpenseRepository) DeleteByID(ctx context.Context, userID, expens
 	_, err := r.client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		TableName: aws.String(r.tableName),
 		Key: map[string]types.AttributeValue{
-			"user_id":    &types.AttributeValueMemberS{Value: userID},
+			"user_id":    &types.AttributeValueMemberN{Value: userID},
 			"expense_id": &types.AttributeValueMemberS{Value: expenseID},
 		},
 	})
