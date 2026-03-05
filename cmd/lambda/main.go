@@ -48,6 +48,7 @@ func init() {
 	botHandlers = &bot.BotHandlers{
 		Expense: handlers.NewExpenseHandler(expenseService),
 		Query:   handlers.NewQueryHandler(expenseService),
+		Delete:  handlers.NewDeleteHandler(expenseService),
 	}
 }
 
