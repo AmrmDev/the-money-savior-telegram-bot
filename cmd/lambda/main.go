@@ -11,6 +11,7 @@ import (
 	"money-telegram-bot/internal/handlers"
 	"money-telegram-bot/internal/repository"
 	"money-telegram-bot/internal/service"
+	"money-telegram-bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 
@@ -24,22 +25,22 @@ var botHandlers *bot.BotHandlers // ponteiro para a struct, não o tipo
 func init() {
 	token := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if token == "" {
-		log.Fatal("[FATAL] TELEGRAM_BOT_TOKEN environment variable not configured.")
+		log.Fatal(utils.FatalEnvironmentVariableNotSet)
 	}
 
 	var err error
 	telegramBot, err = tgbotapi.NewBotAPI(token)
 	if err != nil {
-		log.Fatal("[FATAL] Failed to initialize Telegram bot:", err)
+		log.Fatal(utils.FatalTelegramInitialized, err)
 	}
-	log.Printf("[INFO] Lambda bot authenticated as @%s", telegramBot.Self.UserName)
+	log.Printf(utils.InfoLambdaAuthenticated, telegramBot.Self.UserName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	dbClient, err := repository.InitDB(ctx) // captura o client retornado
 	if err != nil {
-		log.Fatal("[FATAL] Failed to initialize DynamoDB:", err)
+		log.Fatal(utils.FatalInitializeDynamoDB, err)
 	}
 
 	expenseRepo := repository.NewDynamoExpenseRepository(dbClient)
@@ -55,7 +56,7 @@ func init() {
 func Handler(ctx context.Context, req events.APIGatewayProxyRequest) error {
 	var update tgbotapi.Update
 	if err := json.Unmarshal([]byte(req.Body), &update); err != nil {
-		log.Printf("[ERROR] Failed to parse Telegram update: %v", err)
+		log.Printf(utils.ErrorParseUpdateTelegram, err)
 		return err
 	}
 
