@@ -48,6 +48,7 @@ func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	log.Printf(utils.InfoPersistingDataIntoDynamodb, message.From.ID)
 	expense, err := h.expenseService.CreateExpense(
 		ctx,
 		message.From.ID,

@@ -1,10 +1,10 @@
 package utils
 
 const (
-	FatalEnvironmentVariableNotSet  = "[FATAL] TELEGRAM_BOT_TOKEN environment variable not configured."
-	FatalTelegramInitialized        = "[FATAL] Failed to initialize Telegram bot: "
-	FatalInitializeDynamoDB         = "[FATAL] Failed to initialize DynamoDB:"
-	FatalBotInitializationFailed    = "[FATAL] Bot initialization failed: "
+	FatalEnvironmentVariableNotSet = "[FATAL] TELEGRAM_BOT_TOKEN environment variable not configured."
+	FatalTelegramInitialized       = "[FATAL] Failed to initialize Telegram bot: "
+	FatalInitializeDynamoDB        = "[FATAL] Failed to initialize DynamoDB:"
+	FatalBotInitializationFailed   = "[FATAL] Bot initialization failed: "
 
 	InfoStartingBot         = "[INFO] Starting Money Savior Telegram Bot..."
 	InfoBotAuthenticated    = "[INFO] Bot authenticated as @%s"
@@ -19,10 +19,11 @@ const (
 	InfoProcessingQuery   = "[INFO] Processing /consulta | userID=%d"
 	InfoProcessingDelete  = "[INFO] Processing /deletar | userID=%d"
 
-	InfoExpenseCreated    = "[INFO] Expense created | userID=%d | expenseID=%s | amount=%.2f"
-	InfoQueryResultSent   = "[INFO] Query result sent | userID=%s | count=%d"
-	InfoExpenseDeleted    = "[INFO] Expense deleted | userID=%d | expenseID=%s"
-	InfoAllExpensesDeleted = "[INFO] All expenses deleted | userID=%d"
+	InfoPersistingDataIntoDynamodb = "[INFO] Persisting data into DynamoDB | userID=%d"
+	InfoExpenseCreated             = "[INFO] Expense created | userID=%d | expenseID=%s | amount=%.2f"
+	InfoQueryResultSent            = "[INFO] Query result sent | userID=%s | count=%d"
+	InfoExpenseDeleted             = "[INFO] Expense deleted | userID=%d | expenseID=%s"
+	InfoAllExpensesDeleted         = "[INFO] All expenses deleted | userID=%d"
 
 	WarnUnknownCommand         = "[WARN] Unknown command received: /%s"
 	WarnInvalidCommandReceived = "[WARN] Invalid command received: /%s"
