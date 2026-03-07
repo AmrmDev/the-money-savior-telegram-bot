@@ -7,9 +7,11 @@ import (
 	"money-telegram-bot/internal/handlers"
 	"money-telegram-bot/internal/repository"
 	"money-telegram-bot/internal/service"
+	"money-telegram-bot/internal/utils"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -30,15 +32,15 @@ func RouteUpdate(
 	}
 
 	if msg == nil {
-		log.Println("[DEBUG] Update received with no message. Skipping...")
+		log.Println(utils.DebugUpdateWithNoMessage)
 		return
 	}
 
-	log.Printf("[INFO] Message received: %q", msg.Text)
+	log.Printf(utils.InfoMessageReceived, msg.Text)
 
 	if msg.IsCommand() {
 		command := msg.Command()
-		log.Printf("[INFO] Command received: /%s", command)
+		log.Printf(utils.InfoCommandReceived, command)
 
 		switch command {
 		case "start":
@@ -60,7 +62,7 @@ func RouteUpdate(
 			h.Delete.HandleDeleteAll(bot, msg)
 
 		default:
-			log.Printf("[WARN] Unknown command received: /%s", command)
+			log.Printf(utils.WarnUnknownCommand, command)
 			handlers.HandleInvalidCommand(bot, msg)
 		}
 	}
@@ -72,7 +74,7 @@ func Start(token string) error {
 		return err
 	}
 
-	log.Printf("[INFO] Bot authenticated as @%s", bot.Self.UserName)
+	log.Printf(utils.InfoBotAuthenticated, bot.Self.UserName)
 
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {

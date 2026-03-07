@@ -22,7 +22,7 @@ func NewQueryHandler(expenseService *service.ExpenseService) *QueryHandler {
 }
 
 func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	log.Printf("[INFO] Processing /consulta | userID=%d", message.From.ID)
+	log.Printf(utils.InfoProcessingQuery, message.From.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -33,10 +33,12 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 	if len(args) == 1 {
 		expense, err := h.expenseService.GetByID(ctx, userID, args[0])
 		if err != nil {
+			log.Printf(utils.ErrorExpenseNotFound, userID, args[0])
 			utils.Reply(bot, message.Chat.ID, utils.ErrExpenseNotFound)
 			return
 		}
 
+		log.Printf(utils.InfoQueryResultSent, userID, 1)
 		utils.ReplyMarkdown(
 			bot,
 			message.Chat.ID,
@@ -47,6 +49,7 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 
 	expenses, err := h.expenseService.ListByUser(ctx, userID)
 	if err != nil {
+		log.Printf(utils.ErrorQueryingExpenses, userID, err)
 		utils.Reply(bot, message.Chat.ID, utils.ErrQueryExpenses)
 		return
 	}
@@ -56,6 +59,7 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		return
 	}
 
+	log.Printf(utils.InfoQueryResultSent, userID, len(expenses))
 	utils.ReplyMarkdown(
 		bot,
 		message.Chat.ID,

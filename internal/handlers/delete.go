@@ -20,18 +20,22 @@ func NewDeleteHandler(service *service.ExpenseService) *DeleteHandler {
 }
 
 func (h *DeleteHandler) HandleDeleteAll(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	log.Printf("[WARN] /deletartudo invoked | userID=%d", message.From.ID)
+	log.Printf(utils.WarnDeleteAllInvoked, message.From.ID)
 
 	err := h.service.DeleteAllExpenses(context.Background(), message.From.ID)
 	if err != nil {
+		log.Printf(utils.ErrorDeletingAllExpenses, message.From.ID, err)
 		utils.Reply(bot, message.Chat.ID, utils.ErrDeletingExpenses)
 		return
 	}
 
+	log.Printf(utils.InfoAllExpensesDeleted, message.From.ID)
 	utils.Reply(bot, message.Chat.ID, utils.SuccessDeleteAll)
 }
 
 func (h *DeleteHandler) HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	log.Printf(utils.InfoProcessingDelete, message.From.ID)
+
 	args := strings.Fields(message.Text)
 
 	if len(args) < 2 {
@@ -47,9 +51,11 @@ func (h *DeleteHandler) HandleDelete(bot *tgbotapi.BotAPI, message *tgbotapi.Mes
 
 	err := h.service.DeleteExpense(context.Background(), message.From.ID, expenseID)
 	if err != nil {
+		log.Printf(utils.ErrorDeletingExpense, message.From.ID, expenseID, err)
 		utils.Reply(bot, message.Chat.ID, utils.ErrDeletingExpense)
 		return
 	}
 
+	log.Printf(utils.InfoExpenseDeleted, message.From.ID, expenseID)
 	utils.Reply(bot, message.Chat.ID, utils.SuccessDeleteExpense)
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -21,17 +22,19 @@ func NewExpenseHandler(expenseService *service.ExpenseService) *ExpenseHandler {
 }
 
 func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	log.Printf(utils.InfoProcessingExpense, message.From.ID)
+
 	parts := strings.Fields(message.Text)
 
 	if len(parts) < 3 {
-		utils.Reply(bot, message.Chat.ID,
-			utils.ErrInvalidFormat,
-		)
+		log.Printf(utils.ErrorInvalidExpenseFormat, message.From.ID)
+		utils.Reply(bot, message.Chat.ID, utils.ErrInvalidFormat)
 		return
 	}
 
 	amount, err := strconv.ParseFloat(parts[1], 64)
 	if err != nil {
+		log.Printf(utils.ErrorInvalidExpenseAmount, message.From.ID, parts[1])
 		utils.Reply(bot, message.Chat.ID, utils.ErrInvalidAmount)
 		return
 	}
@@ -56,10 +59,12 @@ func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message)
 	)
 
 	if err != nil {
+		log.Printf(utils.ErrorSavingExpense, message.From.ID, err)
 		utils.Reply(bot, message.Chat.ID, utils.ErrSaveExpense)
 		return
 	}
 
+	log.Printf(utils.InfoExpenseCreated, message.From.ID, expense.ExpenseID, expense.Amount)
 	utils.Reply(
 		bot,
 		message.Chat.ID,

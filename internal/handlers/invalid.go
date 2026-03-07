@@ -8,7 +8,7 @@ import (
 )
 
 func HandleInvalidCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	log.Printf("[WARN] Invalid command received: /%s", message.Command())
+	log.Printf(utils.WarnInvalidCommandReceived, message.Command())
 
 	utils.ReplyMarkdown(bot, message.Chat.ID, utils.MsgInvalidCommand(message.Command()))
 
@@ -18,10 +18,5 @@ func HandleInvalidCommand(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		username = utils.NoUsernameConst
 	}
 
-	log.Printf(
-		"[INFO] Response sent | chatID=%d | userID=%d | userName=%s | status=success",
-		message.Chat.ID,
-		user.ID,
-		username,
-	)
+	log.Printf(utils.InfoCommandResponseSent, message.Chat.ID, user.ID, username, message.Command())
 }

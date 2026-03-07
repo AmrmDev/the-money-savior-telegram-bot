@@ -8,7 +8,7 @@ import (
 )
 
 func HandleStart(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	log.Println("[INFO] Processing /start command")
+	log.Println(utils.InfoProcessingStart)
 
 	utils.ReplyMarkdown(bot, message.Chat.ID, utils.MsgStart)
 
@@ -23,10 +23,5 @@ func HandleStart(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		lastName = "-"
 	}
 
-	log.Printf(
-		"[INFO] Response sent | chatID=%d | userID=%d | userName=%s | status=success",
-		message.Chat.ID,
-		user.ID,
-		username,
-	)
+	log.Printf(utils.InfoCommandResponseSent, message.Chat.ID, user.ID, username, "start")
 }

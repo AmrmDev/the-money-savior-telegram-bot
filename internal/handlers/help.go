@@ -8,7 +8,7 @@ import (
 )
 
 func HandleHelp(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
-	log.Println("[INFO] Processing /help command")
+	log.Println(utils.InfoProcessingHelp)
 
 	utils.ReplyMarkdown(bot, message.Chat.ID, utils.MsgHelp)
 
@@ -18,10 +18,5 @@ func HandleHelp(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		username = utils.NoUsernameConst
 	}
 
-	log.Printf(
-		"[INFO] Response sent | chatID=%d | userID=%d | userName=%s | command=/help | status=success",
-		message.Chat.ID,
-		user.ID,
-		username,
-	)
+	log.Printf(utils.InfoCommandResponseSent, message.Chat.ID, user.ID, username, "help")
 }

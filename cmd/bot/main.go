@@ -5,17 +5,18 @@ import (
 	"os"
 
 	"money-telegram-bot/internal/bot"
+	"money-telegram-bot/internal/utils"
 )
 
 func main() {
 	token := os.Getenv("TELEGRAM_BOT_TOKEN")
 	if token == "" {
-		log.Fatal("[FATAL] TELEGRAM_BOT_TOKEN environment variable not configured. Please set this environment variable with your bot's token.")
+		log.Fatal(utils.FatalEnvironmentVariableNotSet)
 	}
 
-	log.Println("[INFO] Starting Money Savior Telegram Bot...")
+	log.Println(utils.InfoStartingBot)
 
 	if err := bot.Start(token); err != nil {
-		log.Fatal("[FATAL] Bot initialization failed:", err)
+		log.Fatal(utils.FatalBotInitializationFailed, err)
 	}
 }
