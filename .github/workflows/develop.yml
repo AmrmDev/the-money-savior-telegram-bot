@@ -28,10 +28,10 @@ jobs:
           echo "Cobertura total: $COVERAGE%"
           THRESHOLD=90
           if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
-            echo "❌ Cobertura de $COVERAGE% está abaixo do mínimo de $THRESHOLD%"
+            echo "Cobertura de $COVERAGE% está abaixo do mínimo de $THRESHOLD%"
             exit 1
           else
-            echo "✅ Cobertura de $COVERAGE% atende ao mínimo de $THRESHOLD%"
+            echo "Cobertura de $COVERAGE% atende ao mínimo de $THRESHOLD%"
           fi
 
   lint:
