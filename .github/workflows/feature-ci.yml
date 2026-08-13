@@ -1,0 +1,66 @@
+name: Feature CI
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      - run: go mod download
+      - run: go build -v ./...
+      - run: go test -v -race ./...
+
+  lint:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache: true
+      - name: Check gofmt
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "Arquivos não formatados:"
+            echo "$unformatted"
+            exit 1
+          fi
+      - uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+
+  open-pr-develop:
+    name: Open PR to develop
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create PR if it doesn't exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing_pr=$(gh pr list --head "${{ github.ref_name }}" --base develop --state open --json number --jq '.[0].number')
+          if [ -z "$existing_pr" ]; then
+            gh pr create \
+              --base develop \
+              --head "${{ github.ref_name }}" \
+              --title "${{ github.ref_name }}" \
+              --body "PR aberto automaticamente a partir da branch \`${{ github.ref_name }}\`."
+          else
+            echo "PR #$existing_pr já existe para essa branch, nada a fazer."
+          fi
