@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"money-telegram-bot/internal/models"
 	"strings"
 
@@ -117,7 +118,9 @@ func ExpenseDetailsMessage(expense *models.Expense) string {
 func ReplyMarkdown(bot *tgbotapi.BotAPI, chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	msg.ParseMode = "Markdown"
-	bot.Send(msg)
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("erro ao enviar mensagem: %v", err)
+	}
 }
 
 func ExpenseListMessage(expenses []models.Expense) string {
