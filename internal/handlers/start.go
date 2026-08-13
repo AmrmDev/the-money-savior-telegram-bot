@@ -18,10 +18,5 @@ func HandleStart(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		username = utils.NoUsernameConst
 	}
 
-	lastName := user.LastName
-	if lastName == "" {
-		lastName = "-"
-	}
-
 	log.Printf(utils.InfoCommandResponseSent, message.Chat.ID, user.ID, username, "start")
 }
