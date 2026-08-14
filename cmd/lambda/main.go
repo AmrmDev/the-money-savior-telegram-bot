@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"money-telegram-bot/internal/bot"
+	"money-telegram-bot/internal/controller"
 	"money-telegram-bot/internal/handlers"
 	"money-telegram-bot/internal/repository"
 	"money-telegram-bot/internal/service"
@@ -20,7 +20,7 @@ import (
 )
 
 var telegramBot *tgbotapi.BotAPI
-var botHandlers *bot.BotHandlers // ponteiro para a struct, não o tipo
+var botHandlers *controller.BotHandlers // ponteiro para a struct, não o tipo
 
 func init() {
 	token := os.Getenv("TELEGRAM_BOT_TOKEN")
@@ -46,7 +46,7 @@ func init() {
 	expenseRepo := repository.NewDynamoExpenseRepository(dbClient)
 	expenseService := service.NewExpenseService(expenseRepo)
 
-	botHandlers = &bot.BotHandlers{
+	botHandlers = &controller.BotHandlers{
 		Expense: handlers.NewExpenseHandler(expenseService),
 		Query:   handlers.NewQueryHandler(expenseService),
 		Delete:  handlers.NewDeleteHandler(expenseService),
@@ -60,7 +60,7 @@ func Handler(ctx context.Context, req events.APIGatewayProxyRequest) error {
 		return err
 	}
 
-	bot.RouteUpdate(telegramBot, update, botHandlers)
+	controller.RouteUpdate(telegramBot, update, botHandlers)
 	return nil
 }
 
