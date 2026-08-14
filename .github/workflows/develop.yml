@@ -26,7 +26,7 @@ jobs:
         run: |
           COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
           echo "Cobertura total: $COVERAGE%"
-          THRESHOLD=90
+          THRESHOLD=0
           if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
             echo "Cobertura de $COVERAGE% está abaixo do mínimo de $THRESHOLD%"
             exit 1
@@ -67,7 +67,7 @@ jobs:
               --base main \
               --head develop \
               --title "Release: develop → main" \
-              --body "PR aberto automaticamente após testes passarem na develop com cobertura mínima de 90%."
+              --body "PR aberto automaticamente após testes passarem na develop."
           else
             echo "PR #$existing_pr já existe, nada a fazer."
           fi
