@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"money-telegram-bot/internal/bot"
+	"money-telegram-bot/internal/controller"
 	"money-telegram-bot/internal/utils"
 )
 
@@ -16,7 +16,7 @@ func main() {
 
 	log.Println(utils.InfoStartingBot)
 
-	if err := bot.Start(token); err != nil {
+	if err := controller.Start(token); err != nil {
 		log.Fatal(utils.FatalBotInitializationFailed, err)
 	}
 }
