@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"money-telegram-bot/internal/models"
 	"strings"
 
@@ -19,6 +20,7 @@ const (
 	ErrDeletingExpenses        = "❌ Erro ao limpar seus gastos."
 	ErrInvalidDeleteIdFormat   = "❌ ID inválido. Exemplo válido: AM123456"
 	ErrDeletingExpense         = "❌ Erro ao deletar o gasto."
+	ErrNoUserIdentifiedMessage = "❌ Não foi possível identificar o usuário. Tente novamente."
 
 	SuccessDeleteAll     = "🧹 Todos os gastos foram apagados com sucesso."
 	SuccessDeleteExpense = "✅ Gasto deletado com sucesso."
@@ -117,7 +119,9 @@ func ExpenseDetailsMessage(expense *models.Expense) string {
 func ReplyMarkdown(bot *tgbotapi.BotAPI, chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	msg.ParseMode = "Markdown"
-	bot.Send(msg)
+	if _, err := bot.Send(msg); err != nil {
+		log.Printf("erro ao enviar mensagem: %v", err)
+	}
 }
 
 func ExpenseListMessage(expenses []models.Expense) string {
