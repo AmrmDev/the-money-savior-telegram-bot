@@ -39,6 +39,12 @@ func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message)
 		return
 	}
 
+	if amount <= 0 {
+		log.Printf(utils.ErrorInvalidExpenseAmount, message.From.ID, parts[1])
+		utils.Reply(bot, message.Chat.ID, utils.ErrInvalidAmount)
+		return
+	}
+
 	categoryInput := parts[2]
 	methodInput := ""
 	if len(parts) >= 4 {
