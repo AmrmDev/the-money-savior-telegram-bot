@@ -27,7 +27,7 @@ func (h *QueryHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
 		utils.Reply(bot, message.Chat.ID, utils.ErrNoUserIdentifiedMessage)
 		return
 	}
-	
+
 	log.Printf(utils.InfoProcessingQuery, message.From.ID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
