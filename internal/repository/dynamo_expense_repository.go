@@ -42,6 +42,7 @@ func (r *DynamoExpenseRepository) Save(
 	_, err = r.client.PutItem(ctx, &dynamodb.PutItemInput{
 		TableName: aws.String(r.tableName),
 		Item:      av,
+		ConditionExpression: aws.String("attribute_not_exists(expense_id)"),
 	})
 
 	return err
