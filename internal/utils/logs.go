@@ -39,4 +39,5 @@ const (
 	ErrorDeletingAllExpenses  = "[ERROR] Failed to delete all expenses | userID=%d | err=%v"
 
 	DebugUpdateWithNoMessage = "[DEBUG] Update received with no message. Skipping..."
+	ErrorNoUserIdentified    = "[ERROR] Failed to identify user | chatID=%d"
 )

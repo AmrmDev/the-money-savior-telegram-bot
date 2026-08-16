@@ -22,6 +22,11 @@ func NewExpenseHandler(expenseService *service.ExpenseService) *ExpenseHandler {
 }
 
 func (h *ExpenseHandler) Handle(bot *tgbotapi.BotAPI, message *tgbotapi.Message) {
+	if message.From == nil {
+		log.Printf(utils.ErrorNoUserIdentified, message.Chat.ID)
+		utils.Reply(bot, message.Chat.ID, utils.ErrNoUserIdentifiedMessage)
+		return
+	}
 	log.Printf(utils.InfoProcessingExpense, message.From.ID)
 
 	parts := strings.Fields(message.Text)
